@@ -39,49 +39,27 @@ public class ConvertIntegerToRomanNumeralTest
         // greater should probably be checked by last index
     }
     [Theory]
-    [InlineData(1999, new[]{'V','L','D','M'})]
-    [InlineData(2400,new[]{'V','L','D','M'})]
-    [InlineData(90,new[]{'V','L','D','M'})]
-    public void ConvertedIntegerOnlyHasAllowedRomanNumeralsBeforeAnyGreaterRomanNumeral(int integerValueToConvert, char[] characters)
+    [InlineData(1999, 'I', new[]{'C','L','D','M'})]
+    [InlineData(2400, 'I', new[]{'C','L','D','M'})]
+    [InlineData(90, 'I', new[]{'C','L','D','M'})]
+    [InlineData(1999, 'X', new[] {'I', 'V', 'D', 'M' })]
+    [InlineData(2400, 'X', new[] {'I', 'V', 'D', 'M' })]
+    [InlineData(90, 'X', new[]{ 'I', 'V', 'D', 'M' })]
+    [InlineData(1999, 'C', new[]{ 'I', 'V', 'X', 'L' })]
+    [InlineData(2400, 'C', new[]{ 'I', 'V', 'X', 'L' })]
+    [InlineData(90, 'C', new[]{ 'I', 'V', 'X', 'L' })]
+    public void ConvertedIntegerOnlyHasAllowedRomanNumeralsBeforeAnyGreaterRomanNumeral(int integerValueToConvert, char characterToCheck, char[] charactersNotAllowedAfter)
     {
         // Given
-        List<char> acceptedRomanNumerals = new() { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-        
-        // When
-        string romanNumeral = IntegerToRomanNumeralConverter.ConvertInteger(integerValueToConvert);
-        
-        // Then
-        Assert.False(characters.Any(character =>
-        {
-            int firstIndexOfLowerNumeral = romanNumeral.IndexOf(character);
-            int lastIndexOfGreaterNumeral = GetMaximumLastIndexOfLargerNumerals(character, romanNumeral, acceptedRomanNumerals);
-            return firstIndexOfLowerNumeral < lastIndexOfGreaterNumeral;
-        }));
-
-        // I only in front of  V X
-        // X -> L C
-        // C -> D M
-    }
-    [Theory]
-    [InlineData(1999, new[]{'I','X','C'})]
-    [InlineData(2400,new[]{'I','X','C'})]
-    [InlineData(90,new[]{'I','X','C'})]
-    public void ConvertedIntegerOnlyHasRomanNumeralsBeforeAnyAllowedGreaterRomanNumeral(int integerValueToConvert, char[] characters)
-    {
-        // Given
-        List<char> acceptedRomanNumerals = new() { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
 
         // When
         string romanNumeral = IntegerToRomanNumeralConverter.ConvertInteger(integerValueToConvert);
         
         // Then
-        Assert.False(characters.Any(character =>
+        foreach (var character in charactersNotAllowedAfter)
         {
-            List<char> acceptedRomanNumeralsToCheck = acceptedRomanNumerals.Skip(acceptedRomanNumerals.IndexOf(character) + 2).ToList();
-            int firstIndexOfLowerNumeral = romanNumeral.IndexOf(character);
-            int lastIndexOfGreaterNumeral = GetMaximumLastIndexOfLargerNumerals(character, romanNumeral, acceptedRomanNumeralsToCheck);
-            return firstIndexOfLowerNumeral < lastIndexOfGreaterNumeral;
-        }));
+            Assert.DoesNotContain(romanNumeral, characterToCheck + character.ToString());
+        }
     }
     [Theory]
     [InlineData(1999)]
@@ -118,9 +96,10 @@ public class ConvertIntegerToRomanNumeralTest
     }
 
     [Theory]
-    [InlineData(1999,"IMM")]
-    [InlineData(2400,"CMMD")]
+    [InlineData(1999,"MCMXCIX")]
+    [InlineData(2400,"MMCD")]
     [InlineData(90,"XC")]
+    [InlineData(3549, "MMMDXLIX")]
     public void ConvertsIntegerCorrectly(int integerValueToConvert, string romanNumeralToConvertTo)
     {
         // Given
