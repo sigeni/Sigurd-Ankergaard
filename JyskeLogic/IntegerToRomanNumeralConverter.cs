@@ -31,35 +31,28 @@ public static class IntegerToRomanNumeralConverter
     private static string CheckAndAddRomanNumeral(ref int decimalValue, int romanValue, string result)
     {
         int minusValue = 0;
-        string minusChar = String.Empty;
-        if (romanValue == 1000 || romanValue == 500)
+        string minusChar = string.Empty;
+        switch (romanValue)
         {
-            minusValue = 111;
-            minusChar = "C";
+            case 1000 or 500:
+                minusValue = 111;
+                minusChar = "C";
+                break;
+            case 50 or 100:
+                minusValue = 11;
+                minusChar = "X";
+                break;
+            case 5 or 10:
+                minusValue = 1;
+                minusChar = "I";
+                break;
         }
-        else if (romanValue == 50 || romanValue == 100)
-        {
-            minusValue = 11;
-            minusChar = "X";
-        }
-        else if (romanValue == 5 || romanValue == 10)
-        {
-            minusValue = 1;
-            minusChar = "I";
-        }
-        int numberOfRomanLetters = (Math.Abs(decimalValue) + minusValue) / romanValue;
-        if (numberOfRomanLetters > 3)
-        {
-            numberOfRomanLetters = 0;
-        }
-        else if (romanValue == 5 || romanValue == 50 || romanValue == 500)
-        {
-            numberOfRomanLetters = Math.Min(1, numberOfRomanLetters);
-        }
+
+        int numberOfRomanLetters = GetNumberOfRomanLettersToAdd(decimalValue, minusValue, romanValue);
         bool subtract = decimalValue / romanValue != numberOfRomanLetters;
-        for (int i = 0; i < Int32.Abs(numberOfRomanLetters); i++)
+        for (int i = 0; i < int.Abs(numberOfRomanLetters); i++)
         {
-            if (!subtract || i + 1 < Int32.Abs(numberOfRomanLetters))
+            if (!subtract || i + 1 < int.Abs(numberOfRomanLetters))
             {
                 result += s_romanNumeralsIntegerValueDictionary[romanValue];
                 decimalValue -= romanValue;
@@ -67,11 +60,20 @@ public static class IntegerToRomanNumeralConverter
             else
             {
                 result += $"{minusChar}{s_romanNumeralsIntegerValueDictionary[romanValue]}";
-                decimalValue -= (romanValue - s_romanNumeralsIntegerValueDictionary.FirstOrDefault(x => x.Value.ToString() == minusChar).Key);
+                decimalValue -= romanValue - s_romanNumeralsIntegerValueDictionary.FirstOrDefault(x => x.Value.ToString() == minusChar).Key;
                 break;
             }
-
         }
         return result;
+    }
+
+    private static int GetNumberOfRomanLettersToAdd(int decimalValue, int minusValue, int romanValue)
+    {
+        int numberOfRomanLetters = (Math.Abs(decimalValue) + minusValue) / romanValue;
+        if (numberOfRomanLetters > 3)
+        {
+            return 0;
+        }
+        return romanValue is 5 or 50 or 500 ? Math.Min(1, numberOfRomanLetters) : numberOfRomanLetters;
     }
 }
