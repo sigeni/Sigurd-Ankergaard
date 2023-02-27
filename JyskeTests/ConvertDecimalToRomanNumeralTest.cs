@@ -22,23 +22,6 @@ public class ConvertIntegerToRomanNumeralTest
         Assert.ProperSubset(acceptedRomanNumerals, charactersInResult);
     }
     [Theory]
-    [InlineData(1999)]
-    [InlineData(2400)]
-    [InlineData(90)]
-    public void ConvertedIntegerDoesNotContainTwoSmallerRomanNumeralsBeforeAnyGreater(int integerValueToConvert)
-    {
-        // Given
-        List<char> acceptedRomanNumerals = new() { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-        
-        // When
-        string romanNumeral = IntegerToRomanNumeralConverter.ConvertInteger(integerValueToConvert);
-        
-        // Then
-
-        // number of lower with index less than greater is 1 or 0
-        // greater should probably be checked by last index
-    }
-    [Theory]
     [InlineData(1999, 'I', new[]{'C','L','D','M'})]
     [InlineData(2400, 'I', new[]{'C','L','D','M'})]
     [InlineData(90, 'I', new[]{'C','L','D','M'})]
@@ -69,7 +52,7 @@ public class ConvertIntegerToRomanNumeralTest
     {
         
         // Given
-        char[] nonRepeatableCharacters = new []{'V','L','D'};
+        char[] nonRepeatableCharacters = {'V','L','D'};
         
         // When
         string romanNumeral = IntegerToRomanNumeralConverter.ConvertInteger(integerValueToConvert);
@@ -109,11 +92,5 @@ public class ConvertIntegerToRomanNumeralTest
         
         // Then
         Assert.Equal(romanNumeralToConvertTo, romanNumeral);
-    }
-    private static int GetMaximumLastIndexOfLargerNumerals(char lowerCharacter, string romanNumeral, IList<char> acceptedRomanNumerals)
-    {
-        char[] greaterRomanNumerals = acceptedRomanNumerals.Where(character =>
-            acceptedRomanNumerals.IndexOf(character) > acceptedRomanNumerals.IndexOf(lowerCharacter)).ToArray();
-        return romanNumeral.LastIndexOfAny(greaterRomanNumerals);
     }
 }
